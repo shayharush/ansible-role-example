@@ -1,0 +1,136 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "AWS CloudFormation ansible",
+	"Parameters": {
+		"KeyName": {
+			"Description": "key name for instances",
+			"Type": "String",
+			"Default": "OpsSchool"
+		},
+		"StudentName": {
+			"Description": "key name for instances",
+			"Type": "String",
+			"Default": "OpsSchool"
+		}
+	},
+	"Mappings": {
+		"OpsSchool": {
+			"us-east-1": {
+				"Image": "ami-9887c6e7",
+				"SecurityGroup" : "",
+				"Subnet" : "",
+				"InstanceType" : "t3.micro"
+				}
+			}
+	},
+	"Resources": {
+		"AnsibleServer1": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"ImageId": { "Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "Image"] },
+				"InstanceType": { "Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "InstanceType"] },
+				"NetworkInterfaces": [ 
+				{
+					"AssociatePublicIpAddress" : "true",
+					"DeleteOnTermination" : "true",
+					"Description" : "LAN Network interface",
+					"DeviceIndex" : "0",
+					"GroupSet" : [
+						{"Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "SecurityGroup"] }
+						],
+					"SubnetId" : {"Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "Subnet"] }
+				}
+				],
+				"Monitoring": "true",
+				"KeyName":  { "Ref":"KeyName" },
+				"UserData": { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash\n",
+					"IP=`ifconfig | grep 'inet addr' | grep 10. | awk -F: '{print $2}' | awk '{print $1}'`  ; echo $IP `hostname` >> /etc/hosts \n",
+					"sed  -i 's/preserve_hostname: false/preserve_hostname: true/' /etc/cloud/cloud.cfg \n"
+					]]}},
+				"Tags": [ 
+				{"Key": "Name", "Value": "Ansible Server 1"},
+				{"Key": "Project", "Value": "OpsSchool"},
+				{"Key": "Owner", "Value": { "Ref":"StudentName" }},
+				{"Key": "Role", "Value": "Ansible Server"}
+				 ]
+			},
+			"DependsOn" : [ "AnsibleNode1", "AnsibleNode2" ]
+		},
+		"AnsibleNode1": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"ImageId": { "Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "Image"] },
+				"InstanceType": { "Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "InstanceType"] },
+				"NetworkInterfaces": [ 
+				{
+					"AssociatePublicIpAddress" : "true",
+					"DeleteOnTermination" : "true",
+					"Description" : "LAN Network interface",
+					"DeviceIndex" : "0",
+					"GroupSet" : [
+						{"Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "SecurityGroup"] }
+						],
+					"SubnetId" : {"Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "Subnet"] }
+				}
+				],
+				"Monitoring": "true",
+				"KeyName":  { "Ref":"KeyName" },
+				"UserData": { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash\n",
+					"IP=`ifconfig | grep 'inet addr' | grep 10. | awk -F: '{print $2}' | awk '{print $1}'`  ; echo $IP `hostname` >> /etc/hosts \n",
+					"sed  -i 's/preserve_hostname: false/preserve_hostname: true/' /etc/cloud/cloud.cfg \n"
+					]]}},
+				"Tags": [ 
+				{"Key": "Name", "Value": "Ansible Server 1"},
+				{"Key": "Project", "Value": "OpsSchool"},
+				{"Key": "Owner", "Value": { "Ref":"StudentName" }},
+				{"Key": "Role", "Value": "Ansible Server"}
+				 ]
+			}
+		},
+		"AnsibleNode2": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"ImageId": { "Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "Image"] },
+				"InstanceType": { "Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "InstanceType"] },
+				"NetworkInterfaces": [ 
+				{
+					"AssociatePublicIpAddress" : "true",
+					"DeleteOnTermination" : "true",
+					"Description" : "LAN Network interface",
+					"DeviceIndex" : "0",
+					"GroupSet" : [
+						{"Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "SecurityGroup"] }
+						],
+					"SubnetId" : {"Fn::FindInMap": ["OpsSchool", { "Ref": "AWS::Region" }, "Subnet"] }
+				}
+				],
+				"Monitoring": "true",
+				"KeyName":  { "Ref":"KeyName" },
+				"UserData": { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash\n",
+					"IP=`ifconfig | grep 'inet addr' | grep 10. | awk -F: '{print $2}' | awk '{print $1}'`  ; echo $IP `hostname` >> /etc/hosts \n",
+					"sed  -i 's/preserve_hostname: false/preserve_hostname: true/' /etc/cloud/cloud.cfg \n"
+					]]}},
+				"Tags": [ 
+				{"Key": "Name", "Value": "Ansible Server 1"},
+				{"Key": "Project", "Value": "OpsSchool"},
+				{"Key": "Owner", "Value": { "Ref":"StudentName" }},
+				{"Key": "Role", "Value": "Ansible Server"}
+				 ]
+			}
+		}
+	},
+	"Outputs": {
+		"AnsibleServer1IP": {
+			"Value": { "Fn::GetAtt" : [ "AnsibleServer1", "PrivateIp" ] }
+		},
+		"AnsibleNode1IP": {
+			"Value": { "Fn::GetAtt" : [ "AnsibleNode1", "PrivateIp" ] }
+		},
+		"AnsibleNode2IP": {
+			"Value": { "Fn::GetAtt" : [ "AnsibleNode2", "PrivateIp" ] }
+		}
+	}
+}
