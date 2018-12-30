@@ -1,0 +1,25 @@
+---
+- hosts: dbs
+  remote_user: centos
+  become: yes
+  tasks:
+    - name: Add mysql yum repository
+      yum:
+        name: https://dev.mysql.com/get/mysql80-community-release-el7-1.noarch.rpm
+        state: present
+    - name: Install mysql server
+      yum:
+        name: mysql-server
+        state: present
+    - name: disable selinux
+      selinux:
+        state: disabled
+    - name: Add innodb_buffer_pool_size to my.cnf
+      blockinfile:
+        path: /etc/my.cnf
+        block: |
+          innodb_buffer_pool_size={{(ansible_memtotal_mb * 0.6)|round|int}}M
+    - name: Start mysql service
+      systemd:
+        name: mysqld
+        state: started
