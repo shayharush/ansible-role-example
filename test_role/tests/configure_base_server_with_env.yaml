@@ -1,0 +1,23 @@
+---
+- hosts: all
+  remote_user: centos
+  become: yes
+  tasks:
+    - name: create opsschool user
+      user:
+        name: opsschool
+        shell: /bi/bash
+        password: "{{ opsschool_password }}"
+    - name: add epel repo
+      yum:
+        name: "{{ epel_repo_package_name }}"
+        state: present
+    - name: install ntp package
+      yum:
+        name: "{{ ntp_package_name }}"
+        state: present
+    - name: copy ntp.conf file
+      template:
+        src: "{{ ntp_configuration_file_src }}"
+        dest: "{{ ntp_configuration_file_dest }}"
+

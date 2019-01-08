@@ -1,0 +1,5 @@
+opsschool_password: 'opsschool'
+epel_repo_package_url: 'http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'
+ntp_package_name: 'ntp'
+ntp_configuration_file_src: 'files/ntp.conf'
+ntp_configuration_file_dest: '/etc/ntp.conf'
