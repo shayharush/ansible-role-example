@@ -1,0 +1,3 @@
+---
+mysql_server_package: 'mysqlserver'
+mysql_daemon_name: "mysqld"

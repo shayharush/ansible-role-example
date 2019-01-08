@@ -1,0 +1,30 @@
+---
+# tasks file for install_db_server
+- name: include vars per OS
+  include_vars: "{{ ansible_distribuition }}.yml"
+- name: Add mysql yum repository
+  yum:
+    name: "{{ mysql_yum_repository_package }}"
+    state: present
+- name: Install mysql server
+  yum:
+    name: "{{ mysql_server_package }}"
+    state: present
+  when: ansible_distribuition == 'centos'
+- name: install mysql server for ubuntu 
+  apt:
+    name: "{{ mysql_server_package }}"
+  when: ansible_distribuition == 'centos'
+- name: disable selinux
+  selinux:
+    state: disabled
+  when: ansible_distribuition == 'centos'
+- name: Add innodb_buffer_pool_size to my.cnf
+  blockinfile:
+    path: /etc/my.cnf
+    block: |
+      innodb_buffer_pool_size={{ mysql_buffer_pool_size }}
+- name: Start mysql service
+  systemd:
+    name: "{{ mysql_daemon_name }}"
+    state: started

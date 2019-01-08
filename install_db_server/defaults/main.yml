@@ -1,0 +1,4 @@
+---
+# defaults file for install_db_server
+mysql_yum_repository_package: 'https://dev.mysql.com/get/mysql80-community-release-el7-1.noarch.rpm'
+mysql_buffer_pool_size: "{{(ansible_memtotal_mb * 0.6)|round|int}}M"
